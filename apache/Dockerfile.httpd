@@ -1,0 +1,14 @@
+FROM registry.access.redhat.com/ubi8:8.8
+RUN dnf install -y httpd procps-ng iproute
+#RUN echo 'Hello world' > /var/www/html/index.html
+RUN echo 'PidFile /tmp/apache.pid' >> /etc/httpd/conf/httpd.conf
+RUN sed -i 's/Listen 80/Listen 8080/' /etc/httpd/conf/httpd.conf
+RUN sed -i 's#ErrorLog "logs/error_log"#ErrorLog "/proc/self/fd/1"#' /etc/httpd/conf/httpd.conf
+RUN sed -i 's#    CustomLog "logs/access_log" combined#    CustomLog "/proc/self/fd/0" combined#' /etc/httpd/conf/httpd.conf
+#RUN chgrp root /var/www/html && chmod g+w /var/www/html
+#CMD echo "Hello world from $MYNAME" > /var/www/html/index.html && /usr/sbin/httpd -DFOREGROUND
+RUN mkdir -p /var/www/html/root/myapp/v1
+RUN chgrp root /var/www/html/root/myapp/v1 && chmod g+w /var/www/html/root/myapp/v1
+CMD echo "Hello world from $MYNAME path" > /var/www/html/root/myapp/v1/index.html && /usr/sbin/httpd -DFOREGROUND
+
+EXPOSE 8080
